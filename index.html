@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>バンド陣形告知ジェネレーター（試作版）</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- html2canvas for image export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <h1>🎸 バンド陣形告知ジェネレーター</h1>
+        <p>ロマサガ3風の戦闘画面でSNS告知を作成しよう！</p>
+
+        <!-- 設定パネル -->
+        <section class="config-panel">
+            <h2 style="margin-top:0;">1. 告知内容を設定</h2>
+            <div class="config-grid">
+                <div class="input-group">
+                    <label for="input-venue">会場・日時など（バナー用）</label>
+                    <input type="text" id="input-venue" placeholder="例：2024.12.24 @ Shibuya Club">
+                </div>
+                <div class="input-group">
+                    <label for="input-live-title">ライブ名（セリフ用）</label>
+                    <input type="text" id="input-live-title" placeholder="例：神セトリツアーファイナル">
+                </div>
+                <div class="input-group">
+                    <label for="jinkei-type">陣形タイプ</label>
+                    <select id="jinkei-type" onchange="updatePreview()">
+                        <option value="imperial_cross">インペリアルクロス (5人)</option>
+                        <option value="triangle">トライアングル (3/6人)</option>
+                        <option value="diamond">ダイヤモンド (4人)</option>
+                        <option value="v_shape">V字 (3/5人)</option>
+                        <option value="reverse_v">逆V字 (3/5人)</option>
+                        <option value="line_front">前衛一列 (ALL)</option>
+                        <option value="line_back">後衛一列 (ALL)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="bg-select">背景デザイン</label>
+                    <select id="bg-select"
+                        onchange="document.getElementById('battle-bg').src = this.value; saveData();">
+                        <option value="assets/bg/livehouse.png">ライブハウス（標準・横視点）</option>
+                        <option value="assets/bg/galaxy.png" selected>深淵の銀河（ギャラクシー）</option>
+                        <option value="assets/bg/ff.png">次元の狭間（FF風・飛空艇）</option>
+                        <option value="assets/bg/fantasy.png">ファンタジーRPG（平原・お城）</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="speaker-select">セリフを喋る人</label>
+                    <select id="speaker-select" onchange="saveData(); updatePreview();">
+                        <option value="-1">なし（バナー表示のみ）</option>
+                        <!-- JSでメンバー一覧を生成 -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- メンバー選択トグル -->
+            <div id="member-toggles-list" class="member-toggles-list">
+                <!-- JSで生成 -->
+            </div>
+
+            <div style="text-align: right;">
+                <button class="settings-btn" onclick="openModal('member-modal')">⚙️ メンバー情報の詳細設定</button>
+            </div>
+        </section>
+
+        <!-- メンバー編集モーダル -->
+        <div id="member-modal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="modal-title">メンバー情報の設定</span>
+                    <button class="close-btn" onclick="closeModal('member-modal')">閉じる</button>
+                </div>
+                <div id="member-edit-form">
+                    <table class="member-edit-table" id="member-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 5%;">#</th>
+                                <th style="width: 20%;">役割</th>
+                                <th style="width: 25%;">名前</th>
+                                <th style="width: 50%;">アイコン画像URL</th>
+                            </tr>
+                        </thead>
+                        <tbody id="member-table-body">
+                            <!-- JSで生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- プレビューエリア -->
+        <section style="text-align:center;">
+            <h2 style="margin-bottom:10px;">2. プレビュー</h2>
+            <div id="preview-area">
+                <!-- 背景 -->
+                <img id="battle-bg" src="assets/bg/livehouse.png" alt="背景">
+
+                <!-- セリフ吹き出し -->
+                <div id="speech-bubble" class="speech-bubble">
+                    <span id="bubble-text">EVENT NAME</span>
+                </div>
+
+                <!-- ライブ名バナー -->
+                <div id="live-banner" class="live-name-banner">LIVE NAME</div>
+
+                <!-- メンバー配置コンテナ -->
+                <div id="members-container">
+                    <!-- JSで座標に基づいて配置 -->
+                </div>
+            </div>
+
+            <!-- エクスポート / リセットボタン -->
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 20px;">
+                <button class="export-btn" onclick="exportImage()" style="margin-top:0;">SNS用画像を保存する</button>
+                <button class="settings-btn" onclick="resetJinkeiPositions()"
+                    style="border-style: solid; border-color: #f56565; color: #f56565;">⚠️ 現在の陣形の配置を初期化</button>
+            </div>
+        </section>
+
+        <footer style="margin-top:50px; text-align:center; color:#718096; font-size:0.8rem;">
+            &copy; 2024 Band Formation Kokuchi Gen. - Simple Prototype
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
