@@ -50,12 +50,12 @@ const FORMATION_TYPES = {
 
 // 状態管理
 let members = [
-    { name: "Dr. タロウ", part: "Dr", icon: "assets/icons/member1.png", selected: true },
-    { name: "Vo. ハナコ", part: "Vo", icon: "assets/icons/member2.png", selected: true },
-    { name: "Gt. ケンジ", part: "Gt", icon: "assets/icons/member3.png", selected: true },
-    { name: "Ba. ジロウ", part: "Ba", icon: "assets/icons/member4.png", selected: false },
-    { name: "Key. サチコ", part: "Key", icon: "assets/icons/member5.png", selected: false },
-    { name: "Support", part: "???", icon: "assets/icons/member6.png", selected: false }
+    { name: "Dr. タロウ", part: "Dr", icon: "member1.png", selected: true },
+    { name: "Vo. ハナコ", part: "Vo", icon: "member2.png", selected: true },
+    { name: "Gt. ケンジ", part: "Gt", icon: "member3.png", selected: true },
+    { name: "Ba. ジロウ", part: "Ba", icon: "member4.png", selected: false },
+    { name: "Key. サチコ", part: "Key", icon: "member5.png", selected: false },
+    { name: "Support", part: "???", icon: "member6.png", selected: false }
 ];
 
 let userOverrides = {}; // { formationKey: { memberIndex: {x, y} } }
@@ -85,7 +85,7 @@ function loadData() {
     document.getElementById('input-venue').value = localStorage.getItem('jinkei_venue') || "";
     document.getElementById('input-live-title').value = localStorage.getItem('jinkei_live_title') || "";
     document.getElementById('jinkei-type').value = localStorage.getItem('jinkei_type') || "imperial_cross";
-    document.getElementById('bg-select').value = localStorage.getItem('jinkei_bg') || "assets/bg/galaxy.png";
+    document.getElementById('bg-select').value = localStorage.getItem('jinkei_bg') || "galaxy.png";
     document.getElementById('speaker-select').value = localStorage.getItem('jinkei_speaker') || "-1";
     
     document.getElementById('battle-bg').src = document.getElementById('bg-select').value;
@@ -202,7 +202,7 @@ function updatePreview() {
         iconEl.style.top = `${coord.y - 40}px`;
         iconEl.dataset.index = i;
 
-        iconEl.innerHTML = `<img src="${m.icon}"><div class="member-name">${m.part} ${m.name}</div>`;
+        iconEl.innerHTML = `<img src="${m.icon}" onerror="this.style.display='none'"><div class="member-name">${m.part} ${m.name}</div>`;
         
         // ドラッグ用イベント
         iconEl.onmousedown = (e) => startDrag(e, i, iconEl, realIdx);
