@@ -77,7 +77,13 @@ function saveData() {
 // データの読み込み
 function loadData() {
     const savedMembers = localStorage.getItem('jinkei_members_v3');
-    if (savedMembers) members = JSON.parse(savedMembers);
+    if (savedMembers) {
+        members = JSON.parse(savedMembers);
+        // 古いパス（assets/icons/）が含まれていたら削除するクリーニング
+        members.forEach(m => {
+            if (m.icon && m.icon.includes('/')) m.icon = m.icon.split('/').pop();
+        });
+    }
     
     const savedOverrides = localStorage.getItem('jinkei_overrides');
     if (savedOverrides) userOverrides = JSON.parse(savedOverrides);
@@ -85,7 +91,11 @@ function loadData() {
     document.getElementById('input-venue').value = localStorage.getItem('jinkei_venue') || "";
     document.getElementById('input-live-title').value = localStorage.getItem('jinkei_live_title') || "";
     document.getElementById('jinkei-type').value = localStorage.getItem('jinkei_type') || "imperial_cross";
-    document.getElementById('bg-select').value = localStorage.getItem('jinkei_bg') || "galaxy.png";
+
+    let bg = localStorage.getItem('jinkei_bg') || "galaxy.png";
+    // 古いパス（assets/bg/）が含まれていたら削除
+    if (bg.includes('/')) bg = bg.split('/').pop();
+    document.getElementById('bg-select').value = bg;
     document.getElementById('speaker-select').value = localStorage.getItem('jinkei_speaker') || "-1";
     
     document.getElementById('battle-bg').src = document.getElementById('bg-select').value;
