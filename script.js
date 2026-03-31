@@ -209,14 +209,14 @@ function updatePreview() {
         // 吹き出しの位置調整 (担当者の場合)
         const realIdx = members.indexOf(m);
         if (realIdx === speakerIdx) {
-            speechBubble.style.left = `${coord.x - 40}px`;
-            speechBubble.style.top = `${coord.y - 100}px`;
+            speechBubble.style.left = `${coord.x - 50}px`;
+            speechBubble.style.top = `${coord.y - 110}px`;
         }
 
         const iconEl = document.createElement('div');
         iconEl.className = 'member-icon';
-        iconEl.style.left = `${coord.x - 40}px`;
-        iconEl.style.top = `${coord.y - 40}px`;
+        iconEl.style.left = `${coord.x - 50}px`;
+        iconEl.style.top = `${coord.y - 50}px`;
         iconEl.dataset.index = i;
 
         iconEl.innerHTML = `<img src="${m.icon}" onerror="this.style.display='none'"><div class="member-name">${m.part} ${m.name}</div>`;
@@ -254,15 +254,15 @@ function onDragMove(e) {
     x = Math.max(40, Math.min(x, 760));
     y = Math.max(40, Math.min(y, 410));
 
-    dragElement.style.left = `${x - 40}px`;
-    dragElement.style.top = `${y - 40}px`;
+    dragElement.style.left = `${x - 50}px`;
+    dragElement.style.top = `${y - 50}px`;
 
     // 吹き出しの追従
     const speakerIdx = parseInt(document.getElementById('speaker-select').value);
     if (dragRealIdx === speakerIdx) {
         const speechBubble = document.getElementById('speech-bubble');
-        speechBubble.style.left = `${x - 40}px`;
-        speechBubble.style.top = `${y - 100}px`;
+        speechBubble.style.left = `${x - 50}px`;
+        speechBubble.style.top = `${y - 110}px`;
     }
 }
 
@@ -272,8 +272,8 @@ function onDragEnd() {
     if (!userOverrides[jinkeiType]) userOverrides[jinkeiType] = {};
     
     userOverrides[jinkeiType][dragMemberIdx] = {
-        x: parseInt(dragElement.style.left) + 40,
-        y: parseInt(dragElement.style.top) + 40
+        x: parseInt(dragElement.style.left) + 50,
+        y: parseInt(dragElement.style.top) + 50
     };
 
     dragElement.classList.remove('dragging');
