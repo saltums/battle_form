@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>バンド陣形告知ジェネレーター（試作版）</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
     <!-- html2canvas for image export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -43,10 +44,10 @@
                     <label for="bg-select">背景デザイン</label>
                     <select id="bg-select"
                         onchange="document.getElementById('battle-bg').src = this.value; saveData();">
-                        <option value="assets/bg/livehouse.png">ライブハウス（標準・横視点）</option>
-                        <option value="assets/bg/galaxy.png" selected>深淵の銀河（ギャラクシー）</option>
-                        <option value="assets/bg/ff.png">次元の狭間（FF風・飛空艇）</option>
-                        <option value="assets/bg/fantasy.png">ファンタジーRPG（平原・お城）</option>
+                        <option value="livehouse.png">ライブハウス（標準・横視点）</option>
+                        <option value="galaxy.png" selected>深淵の銀河（ギャラクシー）</option>
+                        <option value="ff.png">次元の狭間（FF風・飛空艇）</option>
+                        <option value="fantasy.png">ファンタジーRPG（平原・お城）</option>
                     </select>
                 </div>
                 <div class="input-group">
@@ -98,7 +99,7 @@
             <h2 style="margin-bottom:10px;">2. プレビュー</h2>
             <div id="preview-area">
                 <!-- 背景 -->
-                <img id="battle-bg" src="assets/bg/livehouse.png" alt="背景">
+                <img id="battle-bg" src="livehouse.png" alt="背景">
 
                 <!-- セリフ吹き出し -->
                 <div id="speech-bubble" class="speech-bubble">
