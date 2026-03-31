@@ -186,6 +186,13 @@ function updatePreview() {
     // 会場バナーは常に表示（テキストがある場合）
     liveBanner.style.display = (venue.trim() !== "") ? 'block' : 'none';
 
+    // 背景画像の更新（確実に表示させる）
+    const bgImg = document.getElementById('battle-bg');
+    const selectedBg = document.getElementById('bg-select').value;
+    if (bgImg.src.split('/').pop() !== selectedBg) {
+        bgImg.src = selectedBg;
+    }
+
     // メンバー配置（選択済みのみ）
     container.innerHTML = '';
     if (!jinkeiType || !FORMATION_TYPES[jinkeiType]) return;
