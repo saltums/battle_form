@@ -1,0 +1,14 @@
+# Windows
+Thumbs.db
+desktop.ini
+
+# macOS
+.DS_Store
+
+# Version control (if nested)
+.git/
+.svn/
+
+# Local backup / temp
+*.tmp
+*.bak
