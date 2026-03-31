@@ -1,0 +1,333 @@
+@import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
+
+:root {
+    --bg-dark: #000000;
+    --rs-blue: #000080;
+    --rs-gold: #ffd700;
+    --rs-white: #ffffff;
+    --window-border: #e2e8f0;
+    --panel-bg: rgba(0, 0, 128, 0.8);
+}
+
+body {
+    background-color: #1a202c;
+    color: var(--rs-white);
+    font-family: 'DotGothic16', sans-serif;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Container */
+.app-container {
+    max-width: 900px;
+    width: 100%;
+}
+
+/* Config Section */
+.config-panel {
+    background: #2d3748;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.config-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group label {
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+    color: #a0aec0;
+}
+
+.settings-btn {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background: transparent;
+    color: #a0aec0;
+    border: 1px dashed #4a5568;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+}
+
+.settings-btn:hover {
+    color: white;
+    border-color: white;
+    background: rgba(255,255,255,0.05);
+}
+
+/* モーダル */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    display: none; /* JSで制御 */
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--panel-bg);
+    border: 3px solid var(--rs-white);
+    max-width: 600px;
+    width: 100%;
+    padding: 25px;
+    box-shadow: 0 0 30px rgba(0,0,80,0.5);
+    position: relative;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid rgba(255,255,255,0.2);
+    padding-bottom: 10px;
+}
+
+.modal-title {
+    color: var(--rs-gold);
+    font-size: 1.2rem;
+}
+
+.close-btn {
+    background: transparent;
+    color: white;
+    border: 1px solid white;
+    padding: 4px 12px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.close-btn:hover {
+    background: white;
+    color: var(--rs-blue);
+}
+
+/* メンバー編集用テーブル */
+.member-edit-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background: #1a202c;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.member-edit-table th, .member-edit-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #4a5568;
+}
+
+.member-edit-table th {
+    background: #2d3748;
+    color: #a0aec0;
+    font-size: 0.8rem;
+}
+
+.member-edit-table input {
+    width: 90%;
+    padding: 5px;
+    font-size: 0.9rem;
+}
+
+/* Battle Screen (Preview Area) */
+#preview-area {
+    position: relative;
+    width: 800px;
+    height: 450px; /* 16:9 for default, 800x800 for square if needed */
+    background: #000;
+    border: 4px solid var(--window-border);
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+#battle-bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.8;
+}
+
+/* メンバー選択トグル */
+.member-toggles-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+    background: #1a202c;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.member-toggle {
+    padding: 8px 16px;
+    background: #2d3748;
+    border: 1px solid #4a5568;
+    color: #a0aec0;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+    font-size: 0.8rem;
+}
+
+.member-toggle.active {
+    background: var(--rs-blue);
+    color: white;
+    border-color: var(--rs-white);
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+}
+
+.live-name-banner {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.6);
+    padding: 5px 20px;
+    border: 2px solid var(--rs-gold);
+    color: var(--rs-gold);
+    font-size: 1.8rem;
+    text-shadow: 2px 2px #000;
+    white-space: nowrap;
+}
+
+/* Character Icons */
+.speech-bubble {
+    position: absolute;
+    background: #ffffff;
+    border: 3px solid #000000;
+    border-radius: 4px;
+    padding: 6px 12px;
+    color: #000000;
+    font-size: 1.1rem;
+    font-weight: bold;
+    white-space: nowrap;
+    z-index: 200;
+    pointer-events: none;
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.3);
+    display: none;
+}
+
+.speech-bubble.active {
+    display: block;
+}
+
+/* 吹き出しのしっぽ (白抜き版) */
+.speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -11px;
+    left: 20px;
+    border-width: 12px 10px 0 10px;
+    border-style: solid;
+    border-color: #000000 transparent transparent transparent;
+}
+
+.speech-bubble::before {
+    content: '';
+    position: absolute;
+    bottom: -7px;
+    left: 21px;
+    border-width: 10px 9px 0 9px;
+    border-style: solid;
+    border-color: #ffffff transparent transparent transparent;
+    z-index: 1;
+}
+
+.member-icon {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: grab;
+    user-select: none;
+}
+
+.member-icon:active {
+    cursor: grabbing;
+}
+
+.member-icon.dragging {
+    transition: none; /* ドラッグ中はスムーズ移動を無効化 */
+    transform: scale(1.1);
+    opacity: 0.8;
+    z-index: 100;
+    filter: brightness(1.2) drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+}
+
+.member-icon img {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.8));
+}
+
+.member-name {
+    font-size: 0.8rem;
+    background: rgba(0,0,0,0.6);
+    padding: 2px 6px;
+    margin-top: 4px;
+    border-radius: 4px;
+    white-space: nowrap;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.export-btn {
+    margin-top: 20px;
+    padding: 15px 40px;
+    background: var(--rs-blue);
+    color: white;
+    border: 3px solid var(--rs-white);
+    border-radius: 8px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+    font-family: inherit;
+}
+
+.export-btn:hover {
+    transform: scale(1.05);
+    background: #0000a0;
+}
+
+.export-btn:active {
+    transform: scale(0.95);
+}
+
+/* Responsive */
+@media (max-width: 850px) {
+    #preview-area {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16 / 9;
+    }
+}
