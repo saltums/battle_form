@@ -209,14 +209,14 @@ function updatePreview() {
         // 吹き出しの位置調整 (担当者の場合)
         const realIdx = members.indexOf(m);
         if (realIdx === speakerIdx) {
-            speechBubble.style.left = `${coord.x - 50}px`;
-            speechBubble.style.top = `${coord.y - 110}px`;
+            speechBubble.style.left = `${coord.x - 65}px`;
+            speechBubble.style.top = `${coord.y - 125}px`;
         }
 
         const iconEl = document.createElement('div');
         iconEl.className = 'member-icon';
-        iconEl.style.left = `${coord.x - 50}px`;
-        iconEl.style.top = `${coord.y - 50}px`;
+        iconEl.style.left = `${coord.x - 65}px`;
+        iconEl.style.top = `${coord.y - 65}px`;
         iconEl.dataset.index = i;
 
         iconEl.innerHTML = `<img src="${m.icon}" onerror="this.style.display='none'"><div class="member-name">${m.part} ${m.name}</div>`;
@@ -247,22 +247,25 @@ function onDragMove(e) {
     const clientX = (e.type && e.type.includes('touch')) ? e.touches[0].clientX : e.clientX;
     const clientY = (e.type && e.type.includes('touch')) ? e.touches[0].clientY : e.clientY;
     
-    let x = clientX - rect.left;
-    let y = clientY - rect.top;
+    // スケール（拡大率）を取得
+    const scale = rect.width / 800;
+    
+    let x = (clientX - rect.left) / scale;
+    let y = (clientY - rect.top) / scale;
 
     // 範囲制限
-    x = Math.max(40, Math.min(x, 760));
-    y = Math.max(40, Math.min(y, 410));
+    x = Math.max(50, Math.min(x, 750));
+    y = Math.max(50, Math.min(y, 400));
 
-    dragElement.style.left = `${x - 50}px`;
-    dragElement.style.top = `${y - 50}px`;
+    dragElement.style.left = `${x - 65}px`;
+    dragElement.style.top = `${y - 65}px`;
 
     // 吹き出しの追従
     const speakerIdx = parseInt(document.getElementById('speaker-select').value);
     if (dragRealIdx === speakerIdx) {
         const speechBubble = document.getElementById('speech-bubble');
-        speechBubble.style.left = `${x - 50}px`;
-        speechBubble.style.top = `${y - 110}px`;
+        speechBubble.style.left = `${x - 65}px`;
+        speechBubble.style.top = `${y - 125}px`;
     }
 }
 
@@ -272,8 +275,8 @@ function onDragEnd() {
     if (!userOverrides[jinkeiType]) userOverrides[jinkeiType] = {};
     
     userOverrides[jinkeiType][dragMemberIdx] = {
-        x: parseInt(dragElement.style.left) + 50,
-        y: parseInt(dragElement.style.top) + 50
+        x: parseInt(dragElement.style.left) + 65,
+        y: parseInt(dragElement.style.top) + 65
     };
 
     dragElement.classList.remove('dragging');
@@ -315,13 +318,60 @@ function updateMember(index, field, value) {
 
 async function exportImage() {
     const btn = document.querySelector('.export-btn');
+    const originalText = btn.innerText;
     btn.innerText = "生成中..."; btn.disabled = true;
-    const canvas = await html2canvas(document.querySelector("#preview-area"), { scale: 3, useCORS: true });
-    const link = document.createElement('a');
-    link.download = `band_jinkei_${Date.now()}.png`;
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-    btn.innerText = "SNS用画像を保存する"; btn.disabled = false;
+
+    try {
+        // スケールを一時的に1に戻してキャプチャする（画質維持のため）
+        const scaler = document.getElementById('preview-scaler');
+        const wrapper = document.querySelector('.preview-wrapper');
+        const oldTransform = scaler.style.transform;
+        const oldWrapperHeight = wrapper.style.height;
+        
+        scaler.style.transform = "none";
+        wrapper.style.height = "450px";
+
+        const canvas = await html2canvas(document.querySelector("#preview-area"), { 
+            scale: 2, 
+            useCORS: true,
+            backgroundColor: "#000"
+        });
+
+        // 元に戻す
+        applyScaling();
+
+        const imgData = canvas.toDataURL("image/png");
+        const dest = document.getElementById('generated-image-dest');
+        dest.innerHTML = `<img src="${imgData}" alt="Generated Jinkei">`;
+        
+        // PCなら自動ダウンロードも試みる
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (!isMobile) {
+            const link = document.createElement('a');
+            link.download = `band_jinkei_${Date.now()}.png`;
+            link.href = imgData;
+            link.click();
+        }
+
+        openModal('image-modal');
+    } catch (err) {
+        console.error(err);
+        alert("画像の生成に失敗しました。ブラウザの設定や通信環境を確認してください。");
+    } finally {
+        btn.innerText = originalText; btn.disabled = false;
+    }
+}
+
+function applyScaling() {
+    const wrapper = document.querySelector('.preview-wrapper');
+    const scaler = document.getElementById('preview-scaler');
+    if (!wrapper || !scaler) return;
+    
+    const containerWidth = wrapper.offsetWidth;
+    const scale = Math.min(1, containerWidth / 800);
+    
+    scaler.style.transform = `scale(${scale})`;
+    wrapper.style.height = `${450 * scale}px`;
 }
 
 window.onload = () => {
@@ -338,10 +388,13 @@ window.onload = () => {
     document.getElementById('jinkei-type').addEventListener('change', () => { saveData(); updatePreview(); });
     document.getElementById('speaker-select').addEventListener('change', () => { saveData(); updatePreview(); });
 
+    window.addEventListener('resize', applyScaling);
+    applyScaling();
+
     document.addEventListener('mousemove', onDragMove);
     document.addEventListener('mouseup', onDragEnd);
     document.addEventListener('touchmove', onDragMove);
-    document.addEventListener('touchend', onDragEnd);
+    document.addEventListener('touchend', onDragEnd, { passive: false });
 
     window.onclick = (e) => {
         if (e.target.classList.contains('modal-overlay')) closeModal(e.target.id);
