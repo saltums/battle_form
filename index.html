@@ -68,7 +68,6 @@
             </div>
         </section>
 
-        <!-- メンバー編集モーダル -->
         <div id="member-modal" class="modal-overlay">
             <div class="modal-content">
                 <div class="modal-header">
@@ -93,24 +92,43 @@
             </div>
         </div>
 
+        <!-- 保存用画像プレビューモーダル -->
+        <div id="image-modal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="modal-title">画像が生成されました</span>
+                    <button class="close-btn" onclick="closeModal('image-modal')">閉じる</button>
+                </div>
+                <div id="image-preview-container">
+                    <p>【スマホの方】画像を長押しして保存してください</p>
+                    <p>【PCの方】右クリックから保存、または画像を直接クリック</p>
+                    <div id="generated-image-dest"></div>
+                </div>
+            </div>
+        </div>
+
         <!-- プレビューエリア -->
         <section style="text-align:center;">
             <h2 style="margin-bottom:10px;">2. プレビュー</h2>
-            <div id="preview-area">
-                <!-- 背景 -->
-                <img id="battle-bg" src="livehouse.png" alt="背景">
+            <div class="preview-wrapper">
+                <div id="preview-scaler" class="preview-scaler">
+                    <div id="preview-area">
+                        <!-- 背景 -->
+                        <img id="battle-bg" src="livehouse.png" alt="背景">
 
-                <!-- セリフ吹き出し -->
-                <div id="speech-bubble" class="speech-bubble">
-                    <span id="bubble-text">EVENT NAME</span>
-                </div>
+                        <!-- セリフ吹き出し -->
+                        <div id="speech-bubble" class="speech-bubble">
+                            <span id="bubble-text">EVENT NAME</span>
+                        </div>
 
-                <!-- ライブ名バナー -->
-                <div id="live-banner" class="live-name-banner">LIVE NAME</div>
+                        <!-- ライブ名バナー -->
+                        <div id="live-banner" class="live-name-banner">LIVE NAME</div>
 
-                <!-- メンバー配置コンテナ -->
-                <div id="members-container">
-                    <!-- JSで座標に基づいて配置 -->
+                        <!-- メンバー配置コンテナ -->
+                        <div id="members-container">
+                            <!-- JSで座標に基づいて配置 -->
+                        </div>
+                    </div>
                 </div>
             </div>
 
