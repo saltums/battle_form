@@ -9,7 +9,7 @@ const FORMATION_TYPES = {
             { x: 550, y: 125 }, // Gt (左)
             { x: 550, y: 325 }, // Ba (右)
             { x: 550, y: 225 }, // Key/Other (中央中)
-            { x: 750, y: 225 }  // Extra
+            { x: 750, y: 225 }, { x: 700, y: 100 }, { x: 700, y: 350 }, { x: 450, y: 100 }
         ]
     },
     triangle: {
@@ -18,7 +18,8 @@ const FORMATION_TYPES = {
             { x: 650, y: 225 }, // Dr
             { x: 500, y: 150 }, // Member 2
             { x: 500, y: 300 }, // Member 3
-            { x: 400, y: 225 }, { x: 550, y: 100 }, { x: 550, y: 350 }
+            { x: 400, y: 225 }, { x: 550, y: 100 }, { x: 550, y: 350 },
+            { x: 300, y: 225 }, { x: 600, y: 50 }, { x: 600, y: 400 }
         ]
     },
     diamond: {
@@ -28,22 +29,25 @@ const FORMATION_TYPES = {
             { x: 450, y: 225 }, // Vo
             { x: 575, y: 125 }, // Gt
             { x: 575, y: 325 }, // Ba
-            { x: 650, y: 125 }, { x: 650, y: 325 }
+            { x: 650, y: 125 }, { x: 650, y: 325 },
+            { x: 500, y: 100 }, { x: 500, y: 350 }, { x: 350, y: 225 }
         ]
     },
     v_shape: {
         name: "V字", minMembers: 3,
         coords: [
-            { x: 700, y: 225 }, // Dr
-            { x: 550, y: 125 }, { x: 550, y: 325 },
-            { x: 450, y: 75 },  { x: 450, y: 375 }, { x: 600, y: 225 }
+            { x: 700, y: 225 }, // 1
+            { x: 550, y: 125 }, { x: 550, y: 325 }, // 2, 3
+            { x: 400, y: 50 },  { x: 400, y: 400 }, // 4, 5
+            { x: 600, y: 225 }, { x: 500, y: 225 }, { x: 450, y: 150 }, { x: 450, y: 300 }
         ]
     },
     line_front: {
         name: "一列（前）", minMembers: 1,
         coords: [
-            { x: 450, y: 225 }, { x: 450, y: 125 }, { x: 450, y: 325 },
-            { x: 450, y: 50 },  { x: 450, y: 400 }, { x: 550, y: 225 }
+            { x: 450, y: 225 }, { x: 450, y: 150 }, { x: 450, y: 300 },
+            { x: 450, y: 75 },  { x: 450, y: 375 }, { x: 450, y: 10 },
+            { x: 450, y: 440 }, { x: 550, y: 225 }, { x: 550, y: 150 }
         ]
     }
 };
@@ -55,7 +59,10 @@ let members = [
     { name: "Gt. ケンジ", part: "Gt", icon: "member3.png", selected: true },
     { name: "Ba. ジロウ", part: "Ba", icon: "member4.png", selected: false },
     { name: "Key. サチコ", part: "Key", icon: "member5.png", selected: false },
-    { name: "Support", part: "???", icon: "member6.png", selected: false }
+    { name: "Support 1", part: "???", icon: "member6.png", selected: false },
+    { name: "Support 2", part: "???", icon: "member7.png", selected: false },
+    { name: "Support 3", part: "???", icon: "member8.png", selected: false },
+    { name: "Support 4", part: "???", icon: "member9.png", selected: false }
 ];
 
 let userOverrides = {}; // { formationKey: { memberIndex: {x, y} } }
