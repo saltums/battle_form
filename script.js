@@ -54,15 +54,15 @@ const FORMATION_TYPES = {
 
 // 状態管理
 let members = [
-    { name: "ハギ", part: "Dr", icon: "member1.png", selected: true },
-    { name: "カズヤ", part: "Gt", icon: "member2.png", selected: true },
-    { name: "シュウヘイ", part: "Gt", icon: "member3.png", selected: true },
-    { name: "オグラ", part: "Ba", icon: "member4.png", selected: false },
-    { name: "コデラ", part: "Gt", icon: "member5.png", selected: false },
-    { name: "らいあん", part: "Gt", icon: "member6.png", selected: false },
-    { name: "しゅが", part: "Gt", icon: "member7.png", selected: false },
-    { name: "ハットリ", part: "Gt", icon: "member8.png", selected: false },
-    { name: "ニシオ", part: "Gt", icon: "member9.png", selected: false }
+    { name: "ハギ", part: "Dr", icon: "hagi.png", selected: true },
+    { name: "カズヤ", part: "Gt", icon: "kazuya.png", selected: true },
+    { name: "シュウヘイ", part: "Gt", icon: "shuhei.png", selected: true },
+    { name: "オグラ", part: "Ba", icon: "ogu.png", selected: false },
+    { name: "コデラ", part: "Gt", icon: "kodera.png", selected: false },
+    { name: "らいあん", part: "Gt", icon: "raian.png", selected: false },
+    { name: "しゅが", part: "Gt", icon: "sugar.png", selected: false },
+    { name: "ハットリ", part: "Gt", icon: "hattori.png", selected: false },
+    { name: "ニシオ", part: "Gt", icon: "nishio.png", selected: false }
 ];
 
 let userOverrides = {}; // { formationKey: { memberIndex: {x, y} } }
