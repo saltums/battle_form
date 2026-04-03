@@ -38,7 +38,7 @@ const FORMATION_TYPES = {
         coords: [
             { x: 700, y: 225 }, // 1
             { x: 550, y: 125 }, { x: 550, y: 325 }, // 2, 3
-            { x: 400, y: 50 },  { x: 400, y: 400 }, // 4, 5
+            { x: 400, y: 50 }, { x: 400, y: 400 }, // 4, 5
             { x: 600, y: 225 }, { x: 500, y: 225 }, { x: 450, y: 150 }, { x: 450, y: 300 }
         ]
     },
@@ -46,7 +46,7 @@ const FORMATION_TYPES = {
         name: "一列（前）", minMembers: 1,
         coords: [
             { x: 450, y: 225 }, { x: 450, y: 150 }, { x: 450, y: 300 },
-            { x: 450, y: 75 },  { x: 450, y: 375 }, { x: 450, y: 10 },
+            { x: 450, y: 75 }, { x: 450, y: 375 }, { x: 450, y: 10 },
             { x: 450, y: 440 }, { x: 550, y: 225 }, { x: 550, y: 150 }
         ]
     }
@@ -54,21 +54,27 @@ const FORMATION_TYPES = {
 
 // 状態管理
 let members = [
-    { name: "ハギ", part: "Dr", icon: "hagi.png", selected: true },
-    { name: "カズヤ", part: "Gt", icon: "kazuya.png", selected: true },
-    { name: "シュウヘイ", part: "Gt", icon: "shuhei.png", selected: true },
-    { name: "オグラ", part: "Ba", icon: "ogu.png", selected: false },
-    { name: "コデラ", part: "Gt", icon: "kodera.png", selected: false },
-    { name: "らいあん", part: "Gt", icon: "raian.png", selected: false },
-    { name: "しゅが", part: "Gt", icon: "sugar.png", selected: false },
-    { name: "ハットリ", part: "Gt", icon: "hattori.png", selected: false },
-    { name: "ニシオ", part: "Gt", icon: "nishio.png", selected: false }
+    { name: "ハギ", part: "Dr", icon: "hagi.png", selected: true, size: 1.0 },
+    { name: "カズヤ", part: "Gt", icon: "kazuya.png", selected: true, size: 1.0 },
+    { name: "シュウヘイ", part: "Gt", icon: "shuhei.png", selected: true, size: 1.0 },
+    { name: "オグラ", part: "Ba", icon: "ogu.png", selected: false, size: 1.0 },
+    { name: "コデラ", part: "Gt", icon: "kodera.png", selected: false, size: 1.0 },
+    { name: "らいあん", part: "Gt", icon: "raian.png", selected: false, size: 1.0 },
+    { name: "しゅが", part: "Gt", icon: "sugar.png", selected: false, size: 1.0 },
+    { name: "ハットリ", part: "Gt", icon: "hattori.png", selected: false, size: 1.0 },
+    { name: "ニシオ", part: "Gt", icon: "nishio.png", selected: false, size: 1.0 }
 ];
 
 let userOverrides = {}; // { formationKey: { memberIndex: {x, y} } }
 let isDragging = false;
+let isResizing = false;
 let dragElement = null;
 let dragMemberIdx = null;
+
+// リサイズ用（ピンチ操作）
+let startDist = 0;
+let startScale = 1.0;
+let resizeMemberIdx = null;
 
 // データの保存
 function saveData() {
@@ -86,12 +92,13 @@ function loadData() {
     const savedMembers = localStorage.getItem('jinkei_members_v3');
     if (savedMembers) {
         members = JSON.parse(savedMembers);
-        // 古いパス（assets/icons/）が含まれていたら削除するクリーニング
+        // クリーニング & 初期値補完
         members.forEach(m => {
             if (m.icon && m.icon.includes('/')) m.icon = m.icon.split('/').pop();
+            if (m.size === undefined) m.size = 1.0;
         });
     }
-    
+
     const savedOverrides = localStorage.getItem('jinkei_overrides');
     if (savedOverrides) userOverrides = JSON.parse(savedOverrides);
 
@@ -104,7 +111,7 @@ function loadData() {
     if (bg.includes('/')) bg = bg.split('/').pop();
     document.getElementById('bg-select').value = bg;
     document.getElementById('speaker-select').value = localStorage.getItem('jinkei_speaker') || "-1";
-    
+
     document.getElementById('battle-bg').src = document.getElementById('bg-select').value;
 }
 
@@ -113,7 +120,7 @@ function renderSpeakerSelect() {
     const select = document.getElementById('speaker-select');
     const currentVal = select.value;
     select.innerHTML = '<option value="-1">なし（バナー表示のみ）</option>';
-    
+
     members.forEach((m, i) => {
         if (m.selected) {
             const opt = document.createElement('option');
@@ -146,6 +153,7 @@ function renderMemberRows() {
             <td>${i + 1}</td>
             <td><input type="text" value="${m.part}" oninput="updateMember(${i}, 'part', this.value)"></td>
             <td><input type="text" value="${m.name}" oninput="updateMember(${i}, 'name', this.value)"></td>
+            <td><input type="number" value="${m.size}" step="0.1" min="0.5" max="3.0" style="width:40px;" oninput="updateMember(${i}, 'size', parseFloat(this.value))"></td>
             <td><input type="text" value="${m.icon}" oninput="updateMember(${i}, 'icon', this.value)" style="font-size:10px;"></td>
         `;
         tbody.appendChild(row);
@@ -177,12 +185,12 @@ function updatePreview() {
     const speechBubble = document.getElementById('speech-bubble');
     const bubbleText = document.getElementById('bubble-text');
     const speakerIdx = parseInt(document.getElementById('speaker-select').value);
-    
+
     // 入力値の取得
     const venue = document.getElementById('input-venue').value || "会場名・日時";
     const liveTitle = document.getElementById('input-live-title').value || "ライブのタイトル";
     const jinkeiType = document.getElementById('jinkei-type').value;
-    
+
     // テキスト反映
     liveBanner.innerText = venue;
     bubbleText.innerText = liveTitle;
@@ -203,7 +211,7 @@ function updatePreview() {
     // メンバー配置（選択済みのみ）
     container.innerHTML = '';
     if (!jinkeiType || !FORMATION_TYPES[jinkeiType]) return;
-    
+
     const selectedMembers = members.filter(m => m.selected);
     const baseCoords = FORMATION_TYPES[jinkeiType].coords;
     const overrides = userOverrides[jinkeiType] || {};
@@ -226,11 +234,20 @@ function updatePreview() {
         iconEl.style.top = `${coord.y - 65}px`;
         iconEl.dataset.index = i;
 
-        iconEl.innerHTML = `<img src="${m.icon}" onerror="this.style.display='none'"><div class="member-name">${m.part} ${m.name}</div>`;
-        
+        iconEl.innerHTML = `<img src="${m.icon}" onerror="this.style.display='none'" style="transform: scale(${m.size || 1.0})"><div class="member-name">${m.part} ${m.name}</div>`;
+
         // ドラッグ用イベント
         iconEl.onmousedown = (e) => startDrag(e, i, iconEl, realIdx);
         iconEl.ontouchstart = (e) => startDrag(e, i, iconEl, realIdx);
+
+        // PC向けホイールリサイズ
+        iconEl.onwheel = (e) => {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? -0.1 : 0.1;
+            m.size = Math.max(0.2, Math.min(3.0, (m.size || 1.0) + delta));
+            saveData();
+            updatePreview();
+        };
 
         container.appendChild(iconEl);
     });
@@ -239,24 +256,48 @@ function updatePreview() {
 // ドラッグ＆ドロップ中核
 let dragRealIdx = null;
 function startDrag(e, idx, el, realIdx) {
+    if (e.touches && e.touches.length === 2) {
+        // ピンチリサイズ開始
+        isResizing = true;
+        isDragging = false;
+        resizeMemberIdx = realIdx;
+        const p1 = e.touches[0];
+        const p2 = e.touches[1];
+        startDist = Math.hypot(p2.clientX - p1.clientX, p2.clientY - p1.clientY);
+        startScale = members[realIdx].size || 1.0;
+        return;
+    }
+
     isDragging = true;
+    isResizing = false;
     dragElement = el;
     dragMemberIdx = idx;
     dragRealIdx = realIdx;
     el.classList.add('dragging');
-    e.preventDefault();
+    // e.preventDefault(); // これがあるとスクロールできなくなる場合があるため削除
 }
 
 function onDragMove(e) {
+    if (isResizing && e.touches && e.touches.length === 2) {
+        const p1 = e.touches[0];
+        const p2 = e.touches[1];
+        const dist = Math.hypot(p2.clientX - p1.clientX, p2.clientY - p1.clientY);
+        const ratio = dist / startDist;
+        const newScale = Math.max(0.5, Math.min(3.0, startScale * ratio));
+        members[resizeMemberIdx].size = newScale;
+        updatePreview();
+        return;
+    }
+
     if (!isDragging) return;
     const preview = document.getElementById('preview-area');
     const rect = preview.getBoundingClientRect();
     const clientX = (e.type && e.type.includes('touch')) ? e.touches[0].clientX : e.clientX;
     const clientY = (e.type && e.type.includes('touch')) ? e.touches[0].clientY : e.clientY;
-    
+
     // スケール（拡大率）を取得
     const scale = rect.width / 800;
-    
+
     let x = (clientX - rect.left) / scale;
     let y = (clientY - rect.top) / scale;
 
@@ -277,10 +318,16 @@ function onDragMove(e) {
 }
 
 function onDragEnd() {
+    if (isResizing) {
+        isResizing = false;
+        resizeMemberIdx = null;
+        saveData();
+        return;
+    }
     if (!isDragging) return;
     const jinkeiType = document.getElementById('jinkei-type').value;
     if (!userOverrides[jinkeiType]) userOverrides[jinkeiType] = {};
-    
+
     userOverrides[jinkeiType][dragMemberIdx] = {
         x: parseInt(dragElement.style.left) + 65,
         y: parseInt(dragElement.style.top) + 65
@@ -334,12 +381,12 @@ async function exportImage() {
         const wrapper = document.querySelector('.preview-wrapper');
         const oldTransform = scaler.style.transform;
         const oldWrapperHeight = wrapper.style.height;
-        
+
         scaler.style.transform = "none";
         wrapper.style.height = "450px";
 
-        const canvas = await html2canvas(document.querySelector("#preview-area"), { 
-            scale: 2, 
+        const canvas = await html2canvas(document.querySelector("#preview-area"), {
+            scale: 2,
             useCORS: true,
             backgroundColor: "#000"
         });
@@ -350,7 +397,7 @@ async function exportImage() {
         const imgData = canvas.toDataURL("image/png");
         const dest = document.getElementById('generated-image-dest');
         dest.innerHTML = `<img src="${imgData}" alt="Generated Jinkei">`;
-        
+
         // PCなら自動ダウンロードも試みる
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         if (!isMobile) {
@@ -373,10 +420,10 @@ function applyScaling() {
     const wrapper = document.querySelector('.preview-wrapper');
     const scaler = document.getElementById('preview-scaler');
     if (!wrapper || !scaler) return;
-    
+
     const containerWidth = wrapper.offsetWidth;
     const scale = Math.min(1, containerWidth / 800);
-    
+
     scaler.style.transform = `scale(${scale})`;
     wrapper.style.height = `${450 * scale}px`;
 }
@@ -388,7 +435,7 @@ window.onload = () => {
     renderMemberRows();
     filterJinkeiOptions();
     updatePreview();
-    
+
     document.getElementById('input-venue').addEventListener('input', () => { saveData(); updatePreview(); });
     document.getElementById('input-live-title').addEventListener('input', () => { saveData(); updatePreview(); });
     document.getElementById('bg-select').addEventListener('change', () => { saveData(); updatePreview(); });
