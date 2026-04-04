@@ -4,50 +4,51 @@ const FORMATION_TYPES = {
     imperial_cross: {
         name: "インペリアルクロス", minMembers: 5,
         coords: [
-            { x: 650, y: 225 }, // Dr (中央奥)
-            { x: 450, y: 225 }, // Vo (中央前)
-            { x: 550, y: 125 }, // Gt (左)
-            { x: 550, y: 325 }, // Ba (右)
-            { x: 550, y: 225 }, // Key/Other (中央中)
-            { x: 750, y: 225 }, { x: 700, y: 100 }, { x: 700, y: 350 }, { x: 450, y: 100 }
+            { x: 400, y: 225 }, // Central (Standard Dr position or center point)
+            { x: 200, y: 225 }, // Front
+            { x: 300, y: 125 }, // Top
+            { x: 300, y: 325 }, // Bottom
+            { x: 500, y: 225 }, // Back
+            { x: 100, y: 225 }, { x: 200, y: 100 }, { x: 200, y: 350 }, { x: 600, y: 225 }
         ]
     },
     triangle: {
         name: "トライアングル", minMembers: 3,
         coords: [
-            { x: 650, y: 225 }, // Dr
-            { x: 500, y: 150 }, // Member 2
-            { x: 500, y: 300 }, // Member 3
-            { x: 400, y: 225 }, { x: 550, y: 100 }, { x: 550, y: 350 },
-            { x: 300, y: 225 }, { x: 600, y: 50 }, { x: 600, y: 400 }
+            { x: 400, y: 120 }, // Front Top
+            { x: 250, y: 330 }, // Back Left
+            { x: 550, y: 330 }, // Back Right
+            { x: 400, y: 330 }, { x: 150, y: 330 }, { x: 650, y: 330 },
+            { x: 400, y: 50 }, { x: 100, y: 400 }, { x: 700, y: 400 }
         ]
     },
     diamond: {
         name: "ダイヤモンド", minMembers: 4,
         coords: [
-            { x: 700, y: 225 }, // Dr
-            { x: 450, y: 225 }, // Vo
-            { x: 575, y: 125 }, // Gt
-            { x: 575, y: 325 }, // Ba
-            { x: 650, y: 125 }, { x: 650, y: 325 },
-            { x: 500, y: 100 }, { x: 500, y: 350 }, { x: 350, y: 225 }
+            { x: 400, y: 80 },  // Top
+            { x: 400, y: 370 }, // Bottom
+            { x: 150, y: 225 }, // Left
+            { x: 650, y: 225 }, // Right
+            { x: 275, y: 150 }, { x: 525, y: 150 },
+            { x: 275, y: 300 }, { x: 525, y: 300 }, { x: 400, y: 225 }
         ]
     },
     v_shape: {
         name: "V字", minMembers: 3,
         coords: [
-            { x: 700, y: 225 }, // 1
-            { x: 550, y: 125 }, { x: 550, y: 325 }, // 2, 3
-            { x: 400, y: 50 }, { x: 400, y: 400 }, // 4, 5
-            { x: 600, y: 225 }, { x: 500, y: 225 }, { x: 450, y: 150 }, { x: 450, y: 300 }
+            { x: 400, y: 330 }, // Center Bottom
+            { x: 150, y: 100 }, // Left Top
+            { x: 650, y: 100 }, // Right Top
+            { x: 50, y: 50 },   { x: 750, y: 50 },
+            { x: 275, y: 215 }, { x: 525, y: 215 }, { x: 400, y: 225 }, { x: 400, y: 100 }
         ]
     },
     line_front: {
-        name: "一列（前）", minMembers: 1,
+        name: "一列（中央）", minMembers: 1,
         coords: [
-            { x: 450, y: 225 }, { x: 450, y: 150 }, { x: 450, y: 300 },
-            { x: 450, y: 75 }, { x: 450, y: 375 }, { x: 450, y: 10 },
-            { x: 450, y: 440 }, { x: 550, y: 225 }, { x: 550, y: 150 }
+            { x: 400, y: 225 }, { x: 250, y: 225 }, { x: 550, y: 225 },
+            { x: 100, y: 225 }, { x: 700, y: 225 }, { x: 550, y: 100 },
+            { x: 250, y: 100 }, { x: 550, y: 350 }, { x: 250, y: 350 }
         ]
     }
 };
@@ -376,27 +377,38 @@ async function exportImage() {
     btn.innerText = "生成中..."; btn.disabled = true;
 
     try {
+        const previewArea = document.querySelector("#preview-area");
+        
         // スケールを一時的に1に戻してキャプチャする（画質維持のため）
         const scaler = document.getElementById('preview-scaler');
         const wrapper = document.querySelector('.preview-wrapper');
         const oldTransform = scaler.style.transform;
         const oldWrapperHeight = wrapper.style.height;
 
+        // プレビューエリアのサイズを固定し、歪みを防ぐ
         scaler.style.transform = "none";
         wrapper.style.height = "450px";
+        wrapper.style.width = "800px"; // 幅も固定
 
-        const canvas = await html2canvas(document.querySelector("#preview-area"), {
+        // ブラウザのレイアウト再計算を待つ
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        const canvas = await html2canvas(previewArea, {
             scale: 2,
             useCORS: true,
-            backgroundColor: "#000"
+            backgroundColor: "#000",
+            width: 800,
+            height: 450
         });
 
-        // 元に戻す
+        // 元に戻す (CSSの width は style.css で auto なので削除する)
+        wrapper.style.width = "";
         applyScaling();
 
         const imgData = canvas.toDataURL("image/png");
         const dest = document.getElementById('generated-image-dest');
         dest.innerHTML = `<img src="${imgData}" alt="Generated Jinkei">`;
+        ...
 
         // PCなら自動ダウンロードも試みる
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -422,7 +434,15 @@ function applyScaling() {
     if (!wrapper || !scaler) return;
 
     const containerWidth = wrapper.offsetWidth;
-    const scale = Math.min(1, containerWidth / 800);
+    // 画面の高さも考慮（特にスマホ横向き時）
+    // 画面の高さから、ヘッダーやボタンエリアの分を引いた値を最大高さとする
+    const maxHeight = window.innerHeight * 0.8; 
+
+    const scaleX = containerWidth / 800;
+    const scaleY = maxHeight / 450;
+    
+    // 幅と高さのうち、小さい方の倍率を採用する
+    const scale = Math.min(1, scaleX, scaleY);
 
     scaler.style.transform = `scale(${scale})`;
     wrapper.style.height = `${450 * scale}px`;
