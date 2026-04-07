@@ -106,7 +106,7 @@ function loadData() {
     document.getElementById('input-live-title').value = localStorage.getItem('jinkei_live_title') || "";
     document.getElementById('jinkei-type').value = localStorage.getItem('jinkei_type') || "imperial_cross";
 
-    let bg = localStorage.getItem('jinkei_bg') || "assets/bg/galaxy.png";
+    let bg = localStorage.getItem('jinkei_bg') || "galaxy.png";
     document.getElementById('bg-select').value = bg;
     document.getElementById('speaker-select').value = localStorage.getItem('jinkei_speaker') || "-1";
 
