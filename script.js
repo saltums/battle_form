@@ -408,7 +408,6 @@ async function exportImage() {
         const imgData = canvas.toDataURL("image/png");
         const dest = document.getElementById('generated-image-dest');
         dest.innerHTML = `<img src="${imgData}" alt="Generated Jinkei">`;
-        ...
 
         // PCなら自動ダウンロードも試みる
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
