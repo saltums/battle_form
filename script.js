@@ -95,7 +95,6 @@ function loadData() {
         members = JSON.parse(savedMembers);
         // クリーニング & 初期値補完
         members.forEach(m => {
-            if (m.icon && m.icon.includes('/')) m.icon = m.icon.split('/').pop();
             if (m.size === undefined) m.size = 1.0;
         });
     }
@@ -107,9 +106,7 @@ function loadData() {
     document.getElementById('input-live-title').value = localStorage.getItem('jinkei_live_title') || "";
     document.getElementById('jinkei-type').value = localStorage.getItem('jinkei_type') || "imperial_cross";
 
-    let bg = localStorage.getItem('jinkei_bg') || "galaxy.png";
-    // 古いパス（assets/bg/）が含まれていたら削除
-    if (bg.includes('/')) bg = bg.split('/').pop();
+    let bg = localStorage.getItem('jinkei_bg') || "assets/bg/galaxy.png";
     document.getElementById('bg-select').value = bg;
     document.getElementById('speaker-select').value = localStorage.getItem('jinkei_speaker') || "-1";
 
