@@ -219,15 +219,16 @@ body {
 .live-name-banner {
     position: absolute;
     top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0,0,0,0.6);
-    padding: 5px 20px;
-    border: 2px solid var(--rs-gold);
+    left: 20px;
+    background: rgba(0,0,0,0.7);
+    padding: 10px 15px;
+    border: 3px solid var(--rs-gold);
     color: var(--rs-gold);
-    font-size: 1.8rem;
+    font-size: 1.4rem;
     text-shadow: 2px 2px #000;
     white-space: nowrap;
+    z-index: 50;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
 }
 
 /* Character Icons */

@@ -415,9 +415,7 @@ async function exportImage() {
             useCORS: true,
             backgroundColor: "#000",
             width: 800,
-            height: 450,
-            x: 0,
-            y: 0
+            height: 450
         });
 
         // 元に戻す
