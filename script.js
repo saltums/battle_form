@@ -85,6 +85,7 @@ function saveData() {
     localStorage.setItem('jinkei_live_title', document.getElementById('input-live-title').value);
     localStorage.setItem('jinkei_type', document.getElementById('jinkei-type').value);
     localStorage.setItem('jinkei_bg', document.getElementById('bg-select').value);
+    localStorage.setItem('jinkei_bg_custom', document.getElementById('input-bg-custom').value);
     localStorage.setItem('jinkei_speaker', document.getElementById('speaker-select').value);
 }
 
@@ -108,9 +109,11 @@ function loadData() {
 
     let bg = localStorage.getItem('jinkei_bg') || "galaxy.png";
     document.getElementById('bg-select').value = bg;
+    document.getElementById('input-bg-custom').value = localStorage.getItem('jinkei_bg_custom') || "";
     document.getElementById('speaker-select').value = localStorage.getItem('jinkei_speaker') || "-1";
 
-    document.getElementById('battle-bg').src = document.getElementById('bg-select').value;
+    const customBg = document.getElementById('input-bg-custom').value;
+    document.getElementById('battle-bg').src = customBg || document.getElementById('bg-select').value;
 }
 
 // UI生成
@@ -199,11 +202,26 @@ function updatePreview() {
     // 会場バナーは常に表示（テキストがある場合）
     liveBanner.style.display = (venue.trim() !== "") ? 'block' : 'none';
 
-    // 背景画像の更新（確実に表示させる）
+    // 背景画像の更新
     const bgImg = document.getElementById('battle-bg');
     const selectedBg = document.getElementById('bg-select').value;
-    if (bgImg.src.split('/').pop() !== selectedBg) {
-        bgImg.src = selectedBg;
+    const customBg = document.getElementById('input-bg-custom').value;
+    const targetBg = customBg || selectedBg;
+    
+    // 現在のsrcと異なる場合のみ更新
+    if (bgImg.getAttribute('src') !== targetBg) {
+        bgImg.src = targetBg;
+    }
+
+    // サイズ入力欄の同期 (モーダルが開いている場合)
+    const tbody = document.getElementById('member-table-body');
+    if (tbody && tbody.children.length > 0) {
+        members.forEach((m, i) => {
+            const input = tbody.querySelector(`tr:nth-child(${i + 1}) input[type="number"]`);
+            if (input && document.activeElement !== input) {
+                input.value = m.size;
+            }
+        });
     }
 
     // メンバー配置（選択済みのみ）
@@ -385,21 +403,27 @@ async function exportImage() {
         // プレビューエリアのサイズを固定し、歪みを防ぐ
         scaler.style.transform = "none";
         wrapper.style.height = "450px";
-        wrapper.style.width = "800px"; // 幅も固定
+        wrapper.style.width = "800px";
+        previewArea.style.width = "800px";
+        previewArea.style.height = "450px";
 
         // ブラウザのレイアウト再計算を待つ
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise(resolve => setTimeout(resolve, 150));
 
         const canvas = await html2canvas(previewArea, {
             scale: 2,
             useCORS: true,
             backgroundColor: "#000",
             width: 800,
-            height: 450
+            height: 450,
+            x: 0,
+            y: 0
         });
 
-        // 元に戻す (CSSの width は style.css で auto なので削除する)
+        // 元に戻す
         wrapper.style.width = "";
+        previewArea.style.width = "";
+        previewArea.style.height = "";
         applyScaling();
 
         const imgData = canvas.toDataURL("image/png");
@@ -455,6 +479,7 @@ window.onload = () => {
     document.getElementById('input-venue').addEventListener('input', () => { saveData(); updatePreview(); });
     document.getElementById('input-live-title').addEventListener('input', () => { saveData(); updatePreview(); });
     document.getElementById('bg-select').addEventListener('change', () => { saveData(); updatePreview(); });
+    document.getElementById('input-bg-custom').addEventListener('input', () => { saveData(); updatePreview(); });
     document.getElementById('jinkei-type').addEventListener('change', () => { saveData(); updatePreview(); });
     document.getElementById('speaker-select').addEventListener('change', () => { saveData(); updatePreview(); });
 
